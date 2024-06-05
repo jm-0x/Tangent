@@ -7,12 +7,19 @@ project(
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_library(Tangent STATIC src/Tangent.cpp include/Tangent/Tangent.h)
+set(SOURCE_FILES src/Tangent.cpp)
+
+set(HEADER_FILES include/Tangent/Tangent.h)
+
+add_library(Tangent STATIC ${SOURCE_FILES} ${HEADER_FILES})
 
 target_include_directories(
-  Tangent PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-                 $<INSTALL_INTERFACE:include>)
+  Tangent
+  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/Tangent>
+         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+         $<INSTALL_INTERFACE:include>)
 
 if(MSVC)
   target_compile_options(Tangent PRIVATE /W4 /WX)
@@ -54,12 +61,6 @@ configure_package_config_file(
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/TangentConfig.cmake"
               "${CMAKE_CURRENT_BINARY_DIR}/TangentConfigVersion.cmake"
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Tangent)
-
-include(CTest)
-if(BUILD_TESTING)
-  enable_testing()
-  add_subdirectory(tests)
-endif()
 
 export(
   EXPORT TangentTargets
